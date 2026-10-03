@@ -22,6 +22,9 @@
             <h4>Login</h4>
           </div>
           <div class="card-body">
+            <?php if (isset($_GET["error"])) { ?>
+              <div class="alert alert-danger">Credenciales inválidas</div>
+            <?php } ?>
             <form action="login.php" method="POST">
               <div class="form-group">
                 <label for="username">Username</label>
@@ -41,4 +44,3 @@
 </body>
 
 </html>
-
