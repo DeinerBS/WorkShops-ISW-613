@@ -1,3 +1,13 @@
+<?php
+session_start();
+$error = "";
+
+if (isset($_SESSION["error"])) {
+  $error = $_SESSION["error"];
+  unset($_SESSION["error"]); // Eliminar para que no aparezca  de nuevo
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,8 +32,8 @@
             <h4>Login</h4>
           </div>
           <div class="card-body">
-            <?php if (isset($_GET["error"])) { ?>
-              <div class="alert alert-danger">Credenciales inválidas</div>
+            <?php if ($error != "") { ?>
+              <div class="alert alert-danger" ><?php echo $error; ?></div>
             <?php } ?>
             <form action="login.php" method="POST">
               <div class="form-group">

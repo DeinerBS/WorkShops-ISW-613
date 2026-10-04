@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 // conexion a la base de datos
 $servidor = "localhost";
 $usuario_db = "root";
@@ -36,5 +38,6 @@ if ($resultado->num_rows == 1) {
 }
 
 // el usuario no existe o la contraseña está mal
-header("Location: index.php?error=1");
+$_SESSION["error"] = "Credenciales Inválidas";
+header("Location: index.php");
 exit;
