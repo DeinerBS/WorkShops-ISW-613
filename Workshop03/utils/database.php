@@ -2,7 +2,7 @@
 
 $dsn = 'mysql:host=127.0.0.1;dbname=iswapp;charset=utf8mb4';
 $dbUser = 'root';
-$dbPassword = 'root';
+$dbPassword = '';
 
 try {
     $conn = new PDO($dsn, $dbUser, $dbPassword, [

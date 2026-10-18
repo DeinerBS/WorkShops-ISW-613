@@ -13,6 +13,7 @@ $provinces = getProvinces($conn);
 ?>
 <?php require_once 'common/header.php'; ?>
 <body>
+  <?php require_once __DIR__ . '/common/nav.php'; ?> 
   <div class="container mt-5">
     <div class="row justify-content-center">
       <div class="col-md-6">
