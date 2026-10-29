@@ -1,45 +1,63 @@
 <?php
-require_once __DIR__ . '/utils/messages.php';
-require_once __DIR__ . '/pages/common/header.php';
+// Recibe todas las peticiones y decide qué controlador ejecutar
 
-// Pre-fill the username if the user previously checked "Remember me"
-$rememberedUsername = $_COOKIE['remembered_username'] ?? '';
-?>
-<body>
-  <div class="container mt-5">
-    <h1 class="text-center">Welcome to My Website</h1>
-    <p class="text-center">This is a simple homepage created with PHP and Bootstrap.</p>
-  </div>
+require_once __DIR__ . '/config/database.php';   // crea la conexión $conn
+require_once __DIR__ . '/core/helpers.php';
+require_once __DIR__ . '/core/auth.php';
+require_once __DIR__ . '/core/messages.php';
+require_once __DIR__ . '/core/Controller.php';
 
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-header text-center">   
-            <h4>Login</h4>
-          </div>
-          <div class="card-body">
-            <?php renderAlert(); ?>
-            <form action="actions/login.php" method="POST">
-              <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($rememberedUsername, ENT_QUOTES, 'UTF-8'); ?>" required>
-              </div>
-              <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-              </div>
-              <div class="form-group form-check">
-                <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me" <?php echo $rememberedUsername !== '' ? 'checked' : ''; ?>>
-                <label class="form-check-label" for="remember_me">Remember me</label>
-              </div>
-              <button type="submit" class="btn btn-primary btn-block">Login</button>
-            </form>
-            <p class="text-center mt-3 mb-0">Don't have an account? <a href="/pages/register.php">Sign up</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <?php require_once __DIR__ . '/pages/common/footer.php'; ?>
+startSession();
 
+// Tabla de rutas 'ruta' => [Controlador, método, método HTTP permitido]
+$routes = [
+    'auth/login'        => ['AuthController', 'loginForm', 'GET'],
+    'auth/authenticate' => ['AuthController', 'login', 'POST'],
+    'auth/register'     => ['AuthController', 'registerForm', 'GET'],
+    'auth/store'        => ['AuthController', 'register', 'POST'],
+    'auth/logout'       => ['AuthController', 'logout', 'POST'],
+
+    'dashboard'         => ['DashboardController', 'index', 'GET'],
+
+    'profile'           => ['ProfileController', 'show', 'GET'],
+    'profile/update'    => ['ProfileController', 'update', 'POST'],
+
+    'users'             => ['UserController', 'index', 'GET'],
+
+    'courses'           => ['CourseController', 'index', 'GET'],
+    'courses/create'    => ['CourseController', 'create', 'GET'],
+    'courses/store'     => ['CourseController', 'store', 'POST'],
+    'courses/edit'      => ['CourseController', 'edit', 'GET'],
+    'courses/update'    => ['CourseController', 'update', 'POST'],
+    'courses/delete'    => ['CourseController', 'delete', 'POST'],
+];
+
+// Si no viene ?route=..., se muestra el login
+$route = $_GET['route'] ?? 'auth/login';
+
+if (!is_string($route) || !isset($routes[$route])) {
+    http_response_code(404);
+    exit('Página no encontrada');
+}
+
+$controllerName = $routes[$route][0];
+$method = $routes[$route][1];
+$httpMethod = $routes[$route][2];
+
+// Cada ruta solo acepta su método HTTP 
+if ($_SERVER['REQUEST_METHOD'] !== $httpMethod) {
+    http_response_code(405);
+    exit('Método no permitido');
+}
+
+$file = __DIR__ . '/controllers/' . $controllerName . '.php';
+
+if (!is_file($file)) {
+    http_response_code(404);
+    exit('Controlador no encontrado');
+}
+
+require_once $file;
+
+$controller = new $controllerName($conn);
+$controller->$method();
