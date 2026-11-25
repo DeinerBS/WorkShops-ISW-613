@@ -1,0 +1,14 @@
+/* Textos secundarios un poco más visibles en el tema Solar */
+.text-muted {
+    color: #93a1a1 !important;
+}
+
+/* Botones de eliminar en rojo ya que en Solar "danger" es magenta */
+.btn-outline-danger {
+    --bs-btn-color: #dc322f;
+    --bs-btn-border-color: #dc322f;
+    --bs-btn-hover-bg: #dc322f;
+    --bs-btn-hover-border-color: #dc322f;
+    --bs-btn-active-bg: #dc322f;
+    --bs-btn-active-border-color: #dc322f;
+}
